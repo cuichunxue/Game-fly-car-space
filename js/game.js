@@ -132,7 +132,7 @@ const S = {
   t: 0, chT: 0, stats: null, results: [], combo: 0, comboT: 0, flightRings: 0, beacons: 0,
   hints: {}, subsSaid: {}, thrustNow: 0, fold: 0, finX: 0, lastReason: '', nearCool: 0,
 };
-const input = { kL: false, kR: false, kT: false, kB: false, tL: false, tR: false, tT: false, tB: false, pSteer: 0, pT: false, pB: false, steer: 0, thrust: false, boost: false, prevThrust: false, prevBoost: false };
+const input = { kL: false, kR: false, kT: false, kB: false, tSteer: 0, tT: false, tB: false, pSteer: 0, pT: false, pB: false, steer: 0, thrust: false, boost: false, prevThrust: false, prevBoost: false };
 let car;
 const tmpV = new THREE.Vector3(), tmpV2 = new THREE.Vector3();
 const camPos = new THREE.Vector3(0, 3, -8), camLook = new THREE.Vector3();
@@ -500,7 +500,7 @@ addEventListener('keydown', e => {
 addEventListener('keyup', e => { const k = KEY[e.code]; if (k){ input[k] = false; e.preventDefault(); } });
 addEventListener('blur', releaseAll);
 document.addEventListener('visibilitychange', () => { if (document.hidden){ releaseAll(); if (S.mode === 'play' || S.mode === 'countdown' || S.mode === 'transition') togglePause(true); AU.suspend(true); } else AU.suspend(false); });
-function releaseAll(){ for (const k of ['kL', 'kR', 'kT', 'kB', 'tL', 'tR', 'tT', 'tB']) input[k] = false; document.querySelectorAll('.tbtn.down').forEach(b => b.classList.remove('down')); }
+function releaseAll(){ for (const k of ['kL', 'kR', 'kT', 'kB', 'tT', 'tB']) input[k] = false; input.tSteer = 0; steerTouches.clear(); $('stick').hidden = true; document.querySelectorAll('.tbtn.down').forEach(b => b.classList.remove('down')); }
 function holdBtn(id, key){
   const el = $(id); const ids = new Set();
   const on = e => { e.preventDefault(); AU.init(); ids.add(e.pointerId); input[key] = true; el.classList.add('down'); try { el.setPointerCapture(e.pointerId); } catch(_){} if (key === 'tB' && S.cine) skipCine(); };
@@ -508,7 +508,29 @@ function holdBtn(id, key){
   el.addEventListener('pointerdown', on); el.addEventListener('pointerup', off); el.addEventListener('pointercancel', off); el.addEventListener('lostpointercapture', off);
   el.addEventListener('contextmenu', e => e.preventDefault());
 }
-holdBtn('leftBtn', 'tL'); holdBtn('rightBtn', 'tR'); holdBtn('thrustBtn', 'tT'); holdBtn('eboostBtn', 'tB');
+holdBtn('thrustBtn', 'tT'); holdBtn('eboostBtn', 'tB');
+// touch steering: slide left/right anywhere on the left side (analog, like the earlier Roadster games)
+const steerTouches = new Map();
+const tz = $('tzLeft'), stick = $('stick'), knob = $('knob');
+tz.addEventListener('pointerdown', e => {
+  e.preventDefault(); AU.init();
+  if (S.cine && S.cine.skippable) skipCine();
+  steerTouches.clear(); steerTouches.set(e.pointerId, { x0: e.clientX });
+  try { tz.setPointerCapture(e.pointerId); } catch(_){}
+  stick.hidden = false; stick.style.left = e.clientX + 'px'; stick.style.top = e.clientY + 'px'; knob.style.transform = 'translateX(0)';
+  $('touch').classList.add('used');
+}, { passive: false });
+tz.addEventListener('pointermove', e => {
+  const t = steerTouches.get(e.pointerId); if (!t) return;
+  let dx = e.clientX - t.x0; const R = 58;
+  // the stick follows the finger past its edge, so reversing direction is instant
+  if (Math.abs(dx) > R){ t.x0 += dx - Math.sign(dx) * R; stick.style.left = t.x0 + 'px'; dx = Math.sign(dx) * R; }
+  input.tSteer = clamp(dx / (R * .8), -1, 1);
+  knob.style.transform = 'translateX(' + dx * .8 + 'px)';
+});
+const steerEnd = e => { if (!steerTouches.delete(e.pointerId)) return; input.tSteer = 0; stick.hidden = true; };
+['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => tz.addEventListener(ev, steerEnd));
+tz.addEventListener('contextmenu', e => e.preventDefault());
 $('stage').addEventListener('pointerdown', () => { AU.init(); if (S.cine && S.cine.skippable) skipCine(); });
 let padPrevStart = false;
 function pollPad(){
@@ -521,8 +543,8 @@ function pollPad(){
 }
 function combineInput(){
   pollPad();
-  const k = (input.kR || input.tR ? 1 : 0) - (input.kL || input.tL ? 1 : 0);
-  input.steer = clamp(k + input.pSteer, -1, 1);
+  const k = (input.kR ? 1 : 0) - (input.kL ? 1 : 0);
+  input.steer = clamp(k + input.tSteer + input.pSteer, -1, 1);
   input.thrust = input.kT || input.tT || input.pT;
   input.boost = input.kB || input.tB || input.pB;
 }
@@ -853,7 +875,7 @@ function wallStep(dt){
   S.y += S.vy * dt;
   // keep glued to the face
   S.x = w.side < 0 ? s.x0 - PH.CAR_HW - .05 : s.x1 + PH.CAR_HW + .05; S.vx = 0;
-  const away = input.steer !== 0 && Math.sign(-input.steer) === w.side; // steering away from the wall
+  const away = Math.abs(input.steer) > .35 && Math.sign(-input.steer) === w.side; // steering away from the wall
   if (away) leaveWall(false);
   else if (S.z > s.z1 - 1) leaveWall(false, 'end');
   else if (S.wallT > PH.WALL_MAX + settings.assist * .6) leaveWall(false, 'time');

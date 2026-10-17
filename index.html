@@ -86,8 +86,8 @@
 
 <!-- touch controls -->
 <div class="touch" id="touch" hidden>
-  <button class="tbtn steer left" id="leftBtn" aria-label="左"><img src="assets/ui/left.svg" alt=""></button>
-  <button class="tbtn steer right" id="rightBtn" aria-label="右"><img src="assets/ui/right.svg" alt=""></button>
+  <div class="tzone" id="tzLeft" aria-label="左右にスライドで操舵"><span class="tlabel"><img src="assets/ui/left.svg" alt=""><b>左右にスライド</b><img src="assets/ui/right.svg" alt=""></span></div>
+  <div class="stick" id="stick" hidden><i id="knob"></i></div>
   <button class="tbtn eboost" id="eboostBtn" aria-label="緊急ブースト" disabled><img src="assets/ui/storm.svg" alt=""><small>BOOST</small></button>
   <button class="tbtn thrust" id="thrustBtn" aria-label="推力（長押し）"><img src="assets/ui/thrust.svg" alt=""><span>推力</span><small>HOLD</small></button>
 </div>
@@ -149,7 +149,7 @@
       <div class="hcol">
         <h3>スマホ</h3>
         <div class="touchdiag">
-          <div class="td-l">左下の<br><b>◀ ▶</b><br>で操舵</div>
+          <div class="td-l">画面の左側を<br><b>左右にスライド</b><br>で操舵</div>
           <div class="td-r">右下の<b>推力</b>を長押し<br>上の<b>BOOST</b>は<br>満タン時だけ光る</div>
         </div>
       </div>

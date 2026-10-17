@@ -129,7 +129,7 @@ img{pointer-events:none}
 .energy span{display:flex;align-items:center;gap:4px;font:800 14px var(--en)}
 .energy span img{width:16px;height:16px}
 .energy.ready i b{background:linear-gradient(90deg,#fff,#ffcb70);box-shadow:0 0 10px var(--gold)}
-body.touch .cluster{right:auto;left:calc(14px + var(--sal));bottom:calc(150px + var(--sab));flex-direction:row;align-items:center}
+body.touch .cluster{right:auto;left:calc(14px + var(--sal));bottom:calc(84px + var(--sab));flex-direction:row;align-items:center;opacity:.9}
 body.touch .fuel{width:84px;height:84px}
 body.touch .fuel .gv b{font-size:18px}
 
@@ -138,9 +138,15 @@ body.touch .fuel .gv b{font-size:18px}
 .tbtn{position:absolute;pointer-events:auto;border:1px solid var(--line);background:rgba(11,18,36,.5);backdrop-filter:blur(6px);display:grid;place-items:center;touch-action:none}
 .tbtn img{width:34px;height:34px}
 .tbtn.down{background:rgba(88,225,244,.32);border-color:var(--cyan)}
-.steer{bottom:calc(20px + var(--sab));width:84px;height:84px;border-radius:24px}
-.steer.left{left:calc(16px + var(--sal))}
-.steer.right{left:calc(112px + var(--sal))}
+.tzone{position:absolute;left:0;top:34%;bottom:0;width:48%;pointer-events:auto;touch-action:none}
+.tlabel{position:absolute;left:calc(22px + var(--sal));bottom:calc(26px + var(--sab));display:flex;align-items:center;gap:8px;font-size:14px;color:rgba(246,248,255,.7);border:1px dashed rgba(88,225,244,.4);border-radius:14px;padding:10px 14px;transition:opacity .6s}
+.tlabel img{width:22px;height:22px;opacity:.8}
+.touch.used .tlabel{opacity:0}
+.stick{position:absolute;width:150px;height:56px;margin:-28px 0 0 -75px;border-radius:30px;background:rgba(11,18,36,.45);border:1.5px solid rgba(88,225,244,.4);backdrop-filter:blur(3px);pointer-events:none}
+.stick::before,.stick::after{content:"";position:absolute;top:50%;width:0;height:0;border:7px solid transparent;margin-top:-7px;opacity:.6}
+.stick::before{left:10px;border-right-color:var(--cyan)}
+.stick::after{right:10px;border-left-color:var(--cyan)}
+.stick i{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff,var(--cyan) 60%,#2aa);box-shadow:0 0 18px rgba(88,225,244,.7)}
 .thrust{right:calc(18px + var(--sar));bottom:calc(20px + var(--sab));width:118px;height:118px;border-radius:50%;border-width:2px;align-content:center;gap:2px}
 .thrust span{font-weight:900;font-size:16px}.thrust small{font:700 12px var(--en);opacity:.7}
 .thrust img{width:30px;height:30px}
@@ -256,10 +262,10 @@ kbd{display:inline-block;min-width:22px;padding:1px 6px;border-radius:6px;backgr
   .gauges{top:calc(86px + var(--sat));gap:3px}
   .subtitle{top:calc(64px + var(--sat));max-width:min(560px,60vw)}
   .banner{top:16%}
-  .steer{width:72px;height:72px}.steer.right{left:calc(98px + var(--sal))}
   .thrust{width:100px;height:100px}
   .eboost{bottom:calc(128px + var(--sab))}
-  body.touch .cluster{bottom:calc(100px + var(--sab))}
+  body.touch .cluster{bottom:calc(72px + var(--sab))}
+  .tlabel{bottom:calc(14px + var(--sab));padding:6px 10px}
   .meter.wall{bottom:calc(110px + var(--sab))}
   .ctag{bottom:calc(150px + var(--sab))}
 }
