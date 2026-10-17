@@ -5,7 +5,10 @@
  * ============================================================ */
 (() => {
 'use strict';
-const $ = id => document.getElementById(id);
+const $ = id => document.getElementById(id) || stub(id);
+// a missing element (e.g. a stale cached index.html) must never stop the game from booting
+const stubs = {};
+function stub(id){ console.warn('missing element #' + id); return stubs[id] || (stubs[id] = Object.assign(document.createElement('div'), { id: 'stub-' + id })); }
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const lerp = (a, b, t) => a + (b - a) * t;
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -162,10 +165,10 @@ let bootI = 0;
 function boot(){
   if (bootI < bootSteps.length){
     const [txt, fn] = bootSteps[bootI]; setLoad(bootI / bootSteps.length, txt);
-    setTimeout(() => { try { fn(); } catch(e){ console.error(e); } bootI++; boot(); }, 16);
+    setTimeout(() => { try { fn(); } catch(e){ console.error(e); if (window.__tenmaShowError) window.__tenmaShowError((e && e.message) + ' @' + txt); } bootI++; boot(); }, 16);
     return;
   }
-  setLoad(1, 'READY');
+  setLoad(1, 'READY'); window.__tenmaReady = true;
   buildTitleUI(); applySettingsUI();
   setTimeout(() => { $('loading').classList.add('out'); setTimeout(() => $('loading').hidden = true, 800); }, 150);
   goTitle();

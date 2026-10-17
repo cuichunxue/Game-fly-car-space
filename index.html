@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Orbitron:wght@600;800;900&display=swap">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=20261017b">
 </head>
 <body>
 <div id="stage"></div>
@@ -240,13 +240,25 @@
 
 <noscript><div class="card" style="margin:40px auto">JavaScriptを有効にしてください。</div></noscript>
 
-<script src="js/vendor/three.min.js"></script>
-<script src="js/vendor/three-extras.js"></script>
-<script src="js/textures.js"></script>
-<script src="js/models.js"></script>
-<script src="js/audio.js"></script>
-<script src="js/world.js"></script>
-<script src="js/fx.js"></script>
-<script src="js/game.js"></script>
+<script>
+// show start-up errors on the loading screen instead of hanging silently
+(function(){
+  function show(msg){
+    var t = document.getElementById('loadTxt'); if (!t || window.__tenmaReady) return;
+    t.innerHTML = '読み込みに失敗しました。<br><small style="opacity:.7">' + String(msg).replace(/[<>&]/g, '') + '</small><br><button class="go" style="margin-top:14px" onclick="location.reload()"><span>再読み込み</span></button>';
+  }
+  window.addEventListener('error', function(e){ show(e.message + (e.filename ? ' (' + e.filename.split('/').pop() + ':' + e.lineno + ')' : '')); });
+  window.addEventListener('unhandledrejection', function(e){ show(e.reason); });
+  window.__tenmaShowError = show;
+})();
+</script>
+<script src="js/vendor/three.min.js?v=20261017b"></script>
+<script src="js/vendor/three-extras.js?v=20261017b"></script>
+<script src="js/textures.js?v=20261017b"></script>
+<script src="js/models.js?v=20261017b"></script>
+<script src="js/audio.js?v=20261017b"></script>
+<script src="js/world.js?v=20261017b"></script>
+<script src="js/fx.js?v=20261017b"></script>
+<script src="js/game.js?v=20261017b"></script>
 </body>
 </html>
