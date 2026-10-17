@@ -20,10 +20,10 @@ TR.World = (() => {
       phys: { G: 22, term: 26, thrust: 38, latV: 13, latDamp: 13, airDamp: 8, inertia: 0 }, speed: 36 },
     { id: 'city',    code: 'S2', name: 'ROADLESS CITY',   jp: '道のない都市',   z0: 3560,  z1: 7950,  song: 1, weather: 0, emotion: 'スリル',
       goal: '都市頂上の気流ゲートへ', intro: '道路はない。壁が道になる。',
-      phys: { G: 20, term: 24, thrust: 36, latV: 14, latDamp: 12, airDamp: 9, inertia: 0 }, speed: 40 },
+      phys: { G: 15, term: 13, thrust: 34, latV: 14, latDamp: 12, airDamp: 9, inertia: 0 }, speed: 40 },
     { id: 'sky',     code: 'S3', name: 'SKY BREAKER',     jp: '天空突破',       z0: 7950,  z1: 12750, song: 2, weather: 2, emotion: '解放感',
       goal: '成層圏の出口へ', intro: '竜巻は、敵にも翼にもなる。',
-      phys: { G: 18, term: 22, thrust: 34, latV: 14, latDamp: 10, airDamp: 8, inertia: 0 }, speed: 42 },
+      phys: { G: 11, term: 11, thrust: 30, latV: 14, latDamp: 10, airDamp: 8, inertia: 0 }, speed: 42 },
     { id: 'cosmos',  code: 'S4', name: 'COSMIC ODYSSEY',  jp: '宇宙の旅',       z0: 12750, z1: 17900, song: 3, weather: 3, emotion: '畏敬・静寂',
       goal: '光のビーコンを集め、帰還航路を選ぶ', intro: '音のない空で、地球を見下ろす。',
       phys: { G: 5, term: 12, thrust: 13, latV: 16, latDamp: 1.6, airDamp: 1.6, inertia: 1 }, speed: 46 },
@@ -429,6 +429,7 @@ TR.World = (() => {
       } else if (kind === 'pad'){
         sideTowers(18, z, z + len);
         tower(C, 0, z + len / 2, 16, 60, py - 6, { v: 2, pad: true });
+        checkpoint(C, z + len / 2 - 20, 0, py - 6, 'pad');
         item(C, 'cell', 0, py - 4, z + len / 2 - 10); item(C, 'orb', 6, py + 3, z + len / 2 + 25);
       } else if (kind === 'traffic'){
         sideTowers(14, z, z + len);
@@ -468,7 +469,8 @@ TR.World = (() => {
         const col = updraftMesh(8, 90, 0x58e1f4); add(C, col, 0, py - 60, z + len / 2);
         for (let k = 0; k < 4; k++) item(C, 'ring', 0, py + 6 + k * 5, z + len / 2 + 8 + k * 8);
       }
-      if (z > 3800 && ['corridor', 'pad', 'split'].includes(kind) && rnd() < .5){ const lz = z + len * .5; checkpoint(C, lz, 0, pathY(lz) + 4, ''); }
+      if (z > 3800 && ['corridor', 'split', 'traffic'].includes(kind)){ const lz = z + 10; checkpoint(C, lz, 0, pathY(lz) + 2, ''); }
+      if (kind !== 'pad') item(C, 'cell', (rnd() - .5) * 6, py + 1, z + len * .45);
       z += len;
     }
     // the summit: a spire, a column of rising air, the gate at the top of the city
@@ -505,7 +507,7 @@ TR.World = (() => {
   /* ---------- S3 SKY BREAKER ---------- */
   function genSky(C, rnd){
     // rising ring lines & fuel
-    for (let z = 8100; z < 12000; z += 150){ const py = pathY(z); const x = (rnd() - .5) * 20; for (let k = 0; k < 3; k++) item(C, 'ring', x + (k - 1) * 2, py + 2 + k, z + k * 18); if (rnd() < .55) item(C, 'cell', (rnd() - .5) * 18, py + rnd() * 6, z + 70); }
+    for (let z = 8100; z < 12000; z += 150){ const py = pathY(z); const x = (rnd() - .5) * 20; for (let k = 0; k < 3; k++) item(C, 'ring', x + (k - 1) * 2, py + 2 + k, z + k * 18); item(C, 'cell', (rnd() - .5) * 14, py + 1 + rnd() * 4, z + 70); }
     for (let z = 8400; z < 12000; z += 420) item(C, 'orb', (rnd() - .5) * 24, pathY(z) - 4 + rnd() * 6, z);
     // tornadoes: lift + turbulence (warned ahead)
     const tz = [8600, 9150, 9800, 10400, 11100, 11700];

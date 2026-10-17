@@ -21,7 +21,7 @@ const DIFF = {
   hard:   { key: 'hard',   label: 'むずかしい', rescues: 1, crashV: 20, hit: 1,   cp: 'sparse', lives: 5, note: '姿勢補助：弱／救済：章ごと1回／チェックポイント：少なめ／章ごと5機。技術と速度。' },
 };
 const PH = { CAR_HW: .95, CAR_HL: 2.3, CAR_H: 1.2, JUMP: 9.6, CUSHION: 16, VYMAX: 13, COYOTE: .14,
-  FUEL_DRAIN: 15, FUEL_GROUND: 34, JUMP_COST: 3, PERFECT_V: 6, HARD_V: 14, EBOOST_T: 2.8, WALL_MAX: 3.4, NEAR: 1.15 };
+  FUEL_DRAIN: 10, FUEL_GROUND: 34, JUMP_COST: 3, PERFECT_V: 6, HARD_V: 14, EBOOST_T: 2.8, WALL_MAX: 3.4, NEAR: 1.15 };
 const QUAL = {
   high: { dpr: 2,   shadow: 2048, bloom: true,  bloomScale: 1,  msaa: true,  fx: 1 },
   mid:  { dpr: 1.5, shadow: 1024, bloom: true,  bloomScale: .6, msaa: false, fx: .6 },
@@ -378,7 +378,8 @@ const PAR = [95, 115, 120, 125, 110];
 function chapterScore(st, final){
   const ci = st.ci;
   const clear = st.cleared ? 2500 : 0;
-  const rings = st.ringsTotal ? 2000 * st.rings / st.ringsTotal : 0;
+  // chapters without rings (the cosmos) score this category from beacons instead
+  const rings = st.ringsTotal ? 2000 * st.rings / st.ringsTotal : (ci === 3 ? 2000 * S.beacons / 5 : 0);
   const skill = Math.min(2000, st.near * 140 + st.wallSec * 90 + st.perfect * 260 + st.tornadoSec * 60 + st.bigAir * 220);
   const explore = st.exploreTotal ? 1500 * st.explore / st.exploreTotal : 0;
   const safety = Math.max(0, 1500 - st.crashes * 350) * (final ? 1 : clamp(st.t / PAR[ci], 0, 1));
@@ -451,7 +452,7 @@ function respawn(manual){
   // the chapter may have been streamed out (very rare); rebuild it
   W.build(W.chapterAt(cp.z));
   S.x = cp.x; S.z = cp.z; S.y = cp.y + (W.chapterAt(cp.z) === 0 ? 0 : 2); S.vx = 0; S.vy = 0;
-  S.speed = W.speedAt(S.z) * .75; S.fuel = Math.max(S.fuel, 85); S.heat = Math.min(S.heat, 25);
+  S.speed = W.speedAt(S.z) * .75; S.fuel = 100; S.heat = Math.min(S.heat, 25);
   S.crashT = 0; S.invuln = 2; S.wall = null; S.eboostT = 0; S.rescueT = 0; S.timeScale = 1; S.rollout = false;
   settle();
   if (W.chapterAt(S.z) === 0 && S.grounded) S.speed = 20;
@@ -1107,7 +1108,7 @@ function showResult(over){
   $('grade').textContent = grade;
   $('resEyebrow').textContent = over ? 'GAME OVER' : full ? 'JOURNEY COMPLETE' : S.ta ? 'TIME ATTACK' : 'RESULT';
   $('resTitle').textContent = over ? 'もう一度、空へ。' : full ? 'おかえり、TENMA。' : CH[S.chapter].code + ' ' + CH[S.chapter].jp;
-  $('debrief').textContent = over ? '機体は無事。チェックポイントの位置は覚えたはず。' : full ? '断崖から宇宙へ、そして地球へ。8つの空気と5つの空を越えた旅でした。章別タイムアタックが解放されました。' : (S.results.length ? '記録を保存しました。' : '');
+  $('debrief').textContent = over ? '機体は無事。チェックポイントの位置は覚えたはず。' : full ? '断崖から都市、嵐、宇宙、そして地球へ。5つの空を越えて、出発した台地に帰ってきました。章別タイムアタックが解放されました。' : (S.results.length ? '記録を保存しました。' : '');
   let h = '<tr><th>章</th><th>タイム</th><th>到達</th><th>リング</th><th>技術</th><th>探索</th><th>安全</th><th>速さ</th><th>合計</th></tr>';
   for (const r of S.results){ const s = r.score; h += `<tr><td>${CH[r.ci].code} ${CH[r.ci].jp}</td><td class="${r.newTime ? 'new' : ''}">${fmtT(r.t)}</td><td>${s.clear}</td><td>${Math.round(s.rings)}</td><td>${Math.round(s.skill)}</td><td>${Math.round(s.explore)}</td><td>${Math.round(s.safety)}</td><td>${Math.round(s.time)}</td><td class="${r.newBest ? 'new' : ''}">${s.total.toLocaleString()}</td></tr>`; }
   $('resTable').innerHTML = S.results.length ? h : '';
@@ -1368,7 +1369,7 @@ function frame(now){
 }
 
 /* ---------- debug / test hooks (used by automated playtests) ---------- */
-TR.debug = { S, W, input, settings, progress: () => progress, warp(z){ S.z = z; S.x = 0; S.y = W.pathY(z) + 2; W.stream(z); W.build(W.chapterAt(z)); settle(); }, setMode, startRun, chapterClear, finale };
+TR.debug = { S, W, input, settings, camera, scene, fu: () => finalPass.uniforms, comp: () => composer, car: () => car, progress: () => progress, sim(n, bot){ for (let i = 0; i < n; i++){ if (bot) bot(S, W, input); if (S.mode === 'title' || S.mode === 'result' || S.mode === 'gameover' || S.mode === 'pause') return S.mode; step(STEP); input.prevThrust = input.thrust; input.prevBoost = input.boost; if (S.mode === 'play' && S.rollout && S.speed < 1.5) finale(); } return S.mode; }, warp(z){ S.z = z; S.x = 0; S.y = W.pathY(z) + 2; W.stream(z); W.build(W.chapterAt(z)); settle(); }, setMode, startRun, chapterClear, finale };
 
 boot();
 })();
