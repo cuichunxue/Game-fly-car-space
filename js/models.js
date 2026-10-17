@@ -428,14 +428,14 @@ TR.Models = (() => {
   // the home planet with the kit atmosphere-rim shader
   function earth(R){
     const g = new THREE.Group();
-    const surf = new THREE.Mesh(new THREE.SphereGeometry(R, 96, 64), new THREE.MeshStandardMaterial({ map: T.earth(), roughness: .8, metalness: 0, emissive: 0x081830, emissiveIntensity: .25, fog: false }));
+    const surf = new THREE.Mesh(new THREE.SphereGeometry(R, 96, 64), new THREE.MeshStandardMaterial({ map: T.earth(), roughness: .8, metalness: 0, emissive: 0x081830, emissiveIntensity: .2, fog: false, color: 0xb8c4d0 }));
     g.add(surf);
-    const cl = new THREE.Mesh(new THREE.SphereGeometry(R * 1.008, 96, 64), new THREE.MeshStandardMaterial({ map: T.earthClouds(), transparent: true, depthWrite: false, roughness: 1, fog: false }));
+    const cl = new THREE.Mesh(new THREE.SphereGeometry(R * 1.008, 96, 64), new THREE.MeshStandardMaterial({ map: T.earthClouds(), transparent: true, opacity: .7, depthWrite: false, roughness: 1, fog: false }));
     g.add(cl);
     const rim = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.BackSide, fog: false,
-      uniforms: { uRimColor: { value: new THREE.Color(0x5ab8ff) }, uIntensity: { value: 2.2 } },
+      uniforms: { uRimColor: { value: new THREE.Color(0x5ab8ff) }, uIntensity: { value: .9 } },
       vertexShader: 'varying vec3 vNormal; varying vec3 vViewDir; void main(){ vec4 mv = modelViewMatrix*vec4(position,1.); vNormal = normalize(normalMatrix*normal); vViewDir = normalize(-mv.xyz); gl_Position = projectionMatrix*mv; }',
-      fragmentShader: 'precision mediump float; varying vec3 vNormal; varying vec3 vViewDir; uniform vec3 uRimColor; uniform float uIntensity; void main(){ float d = max(dot(normalize(-vNormal),normalize(vViewDir)),0.0); float rim = pow(1.0-d, 4.0)*smoothstep(0., .25, d)*6.; gl_FragColor = vec4(uRimColor*rim*uIntensity, rim); }' });
+      fragmentShader: 'precision mediump float; varying vec3 vNormal; varying vec3 vViewDir; uniform vec3 uRimColor; uniform float uIntensity; void main(){ float d = max(dot(normalize(-vNormal),normalize(vViewDir)),0.0); float rim = pow(1.0-d, 5.0)*smoothstep(0., .3, d)*4.; gl_FragColor = vec4(uRimColor*rim*uIntensity, rim); }' });
     const atm = new THREE.Mesh(new THREE.SphereGeometry(R * 1.04, 96, 64), rim); g.add(atm);
     g.userData = { surf, cl, atm };
     return g;

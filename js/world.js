@@ -41,8 +41,8 @@ TR.World = (() => {
     K(3000,  { top: 0x1c2550, mid: 0x9a5a78, hor: 0xff8a5a, sunCol: 0xff8040, sunDir: [-.4, .03, 1], sunSize: 2.2, stars: .2, clouds: .6, fog: 0xa86a72, fogNear: 100, fogFar: 1200, hemiSky: 0xff9a80, hemiGround: 0x30203a, hemiI: .8, dirCol: 0xff9a60, dirI: 1.7, exposure: 1.0, env: 0 }),
     K(4100,  { top: 0x060a1e, mid: 0x152a4a, hor: 0x2a6a80, sunCol: 0x58e1f4, sunDir: [.5, .3, 1], sunSize: 0, stars: .6, clouds: .2, fog: 0x0d2235, fogNear: 60, fogFar: 900, hemiSky: 0x6ab8ff, hemiGround: 0x401830, hemiI: .7, dirCol: 0x9ad8ff, dirI: .9, exposure: 1.05, env: 1 }),
     K(7400,  { top: 0x0a0a24, mid: 0x2a1840, hor: 0x8a3a5a, sunCol: 0xff6a62, sunDir: [-.5, .2, 1], sunSize: 0, stars: .5, clouds: .3, fog: 0x2a1530, fogNear: 60, fogFar: 900, hemiSky: 0xff8a9a, hemiGround: 0x102030, hemiI: .7, dirCol: 0xffa0b0, dirI: .9, exposure: 1.05, env: 1 }),
-    K(8300,  { top: 0x1a1440, mid: 0x3a3a70, hor: 0x6a6a9a, sunCol: 0xc0b0ff, sunDir: [.3, .25, 1], sunSize: .6, stars: 0, clouds: .9, fog: 0x4a4a78, fogNear: 50, fogFar: 750, hemiSky: 0xa0a8e0, hemiGround: 0x2a2840, hemiI: .9, dirCol: 0xb0b0e0, dirI: 1.1, exposure: 1.05, env: 2 }),
-    K(11500, { top: 0x241a4a, mid: 0x4a4a80, hor: 0x8a80b0, sunCol: 0xffd090, sunDir: [.2, .2, 1], sunSize: 1, stars: 0, clouds: .9, fog: 0x5a5888, fogNear: 60, fogFar: 800, hemiSky: 0xb0b0e8, hemiGround: 0x303050, hemiI: .95, dirCol: 0xd0c0ff, dirI: 1.3, exposure: 1.05, env: 2 }),
+    K(8300,  { top: 0x120e30, mid: 0x2a2a58, hor: 0x54548a, sunCol: 0xc0b0ff, sunDir: [.3, .25, 1], sunSize: .6, stars: 0, clouds: .9, fog: 0x34345e, fogNear: 50, fogFar: 750, hemiSky: 0xa0a8e0, hemiGround: 0x2a2840, hemiI: .9, dirCol: 0xb0b0e0, dirI: 1.1, exposure: 1.05, env: 2 }),
+    K(11500, { top: 0x1c1440, mid: 0x3a3a70, hor: 0x7a70a8, sunCol: 0xffd090, sunDir: [.2, .2, 1], sunSize: 1, stars: 0, clouds: .9, fog: 0x484878, fogNear: 60, fogFar: 800, hemiSky: 0xb0b0e8, hemiGround: 0x303050, hemiI: .95, dirCol: 0xd0c0ff, dirI: 1.3, exposure: 1.05, env: 2 }),
     K(12250, { top: 0x2a5aa8, mid: 0x7aa8e0, hor: 0xffd890, sunCol: 0xffcb70, sunDir: [0, .25, 1], sunSize: 2.6, stars: 0, clouds: .5, fog: 0xd8c8b0, fogNear: 150, fogFar: 1600, hemiSky: 0xffe8c0, hemiGround: 0x5a6080, hemiI: 1.1, dirCol: 0xffe0a0, dirI: 2.6, exposure: 1.0, env: 2 }),
     K(12800, { top: 0x050a24, mid: 0x14285a, hor: 0x4a7ac0, sunCol: 0xfff0d8, sunDir: [.45, .15, 1], sunSize: 1.2, stars: .7, clouds: 0, fog: 0x0a1430, fogNear: 400, fogFar: 3000, hemiSky: 0x9ab8ff, hemiGround: 0x101830, hemiI: .6, dirCol: 0xfff4e0, dirI: 2.4, exposure: 1.0, env: 3 }),
     K(13300, { top: 0x000005, mid: 0x02040e, hor: 0x0a1430, sunCol: 0xfff6e8, sunDir: [.5, .18, 1], sunSize: .8, stars: 1, clouds: 0, fog: 0x02040c, fogNear: 600, fogFar: 4000, hemiSky: 0x5a6a90, hemiGround: 0x0a1020, hemiI: .45, dirCol: 0xffffff, dirI: 2.6, exposure: 1.05, env: 3 }),
@@ -199,14 +199,14 @@ TR.World = (() => {
     if (z < 12750) return pathY(z) - 38;          // the storm deck
     if (z < 13600) return lerp(pathY(12750) - 38, -1400, smooth(12750, 13600, z)); // dropping away: ascent
     if (z < 19600) return null;
-    if (z < 21300) return lerp(-500, 70, smooth(19600, 20300, z)) - smooth(20300, 21300, z) * 330; // pass through on the way down
+    if (z < 21300) return lerp(-500, 70, smooth(19500, 20300, z)) - smooth(20300, 21300, z) * 330; // pass through on the way down
     return -260;
   }
   function earthOffset(z){ // how far below the camera the planet's top sits (null = hidden)
-    if (z < 12600 || z > 20200) return null;
-    if (z < 13400) return lerp(-4000, -520, smooth(12600, 13400, z));
-    if (z < 18200) return -520;
-    return lerp(-520, -40, smooth(18200, 20200, z));
+    if (z < 12600 || z > 19900) return null;
+    if (z < 13400) return lerp(-4000, -900, smooth(12600, 13400, z));
+    if (z < 18200) return -900;
+    return lerp(-900, -380, smooth(18200, 19900, z));
   }
 
   /* ---------- the flight path (center line) per chapter ---------- */
@@ -703,7 +703,8 @@ TR.World = (() => {
     cloud.visible = u.opacity.value > .01;
     u.storm.value = z > 8200 && z < 12000 ? 1 : 0;
     u.sunCol.value.copy(skyMat.uniforms.sunCol.value);
-    u.top.value.copy(skyMat.uniforms.hor.value).lerp(cB.setHex(0xffffff), z > 8200 && z < 11900 ? .25 : .6);
+    const dark = z > 3700 && z < 7900 ? 1 : (z > 8200 && z < 11900 ? .6 : 0);
+    u.top.value.copy(skyMat.uniforms.hor.value).lerp(cB.setHex(0xffffff), .6 - dark * .5); if (dark) u.top.value.multiplyScalar(1 - dark * .45);
     u.bot.value.copy(skyMat.uniforms.mid.value).lerp(cB.setHex(0x9a96aa), .5);
     if (cy !== null && cloud.visible){
       const inside = 1 - smooth(6, 40, Math.abs(cam.y - cy));

@@ -43,6 +43,7 @@ img{pointer-events:none}
 
 /* ---------- HUD ---------- */
 .hud{position:fixed;inset:0;z-index:10;pointer-events:none;font-size:14px}
+.hud.cine .gauges,.hud.cine .cluster,.hud.cine .hud-tc,.hud.cine .hud-tl{opacity:0;transition:opacity 1s}
 .hud button{pointer-events:auto}
 .hud-tl{position:absolute;left:calc(14px + var(--sal));top:calc(10px + var(--sat))}
 .score{font:900 28px/1 var(--en);letter-spacing:1px;text-shadow:0 2px 12px rgba(0,0,0,.6)}
