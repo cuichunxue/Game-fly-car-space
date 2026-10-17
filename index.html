@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0B1224">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="断崖から跳び、道のない都市を壁で駆け、嵐を突き抜けて宇宙へ。そして地球へ帰る。3操作で遊べる、8〜12分の物語型フライト・アドベンチャー。">
+<title>THRUST ROADSTER — TENMA EDITION</title>
+<link rel="icon" href="assets/brand/app_icon_concept.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/brand/app_icon_concept.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Orbitron:wght@600;800;900&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="stage"></div>
+
+<!-- loading -->
+<div id="loading" class="loading">
+  <div class="load-logo"><img src="assets/brand/app_icon_concept.svg" alt=""><div>THRUST<span>ROADSTER</span><em>TENMA EDITION</em></div></div>
+  <div class="load-bar"><b id="loadFill"></b></div>
+  <div class="load-txt" id="loadTxt">エンジンを暖めています…</div>
+</div>
+
+<!-- full-screen overlays -->
+<div id="flash" class="ov flash"></div>
+<div id="pulse" class="ov pulse"></div>
+<div id="boostVeil" class="ov boostveil"></div>
+<div id="heatVeil" class="ov heatveil"></div>
+<div id="rescueVeil" class="ov rescueveil"></div>
+<div id="whiteout" class="ov whiteout"></div>
+<div id="letterbox" class="ov letterbox"><i></i><i></i></div>
+
+<!-- HUD -->
+<div class="hud" id="hud" hidden>
+  <div class="hud-tl">
+    <div class="score" id="score">0</div>
+    <div class="clock" id="clock">0:00.0</div>
+    <div class="rescues" id="rescues" aria-label="救済の残り回数"></div>
+  </div>
+  <div class="hud-tc">
+    <div class="journey" id="journey" aria-hidden="true">
+      <div class="jt"><b id="jFill"></b><i id="jCar"></i></div>
+      <div class="jl"><span>断崖</span><span>都市</span><span>天空</span><span>宇宙</span><span>帰還</span></div>
+    </div>
+    <div class="radar" id="radar" aria-live="polite"></div>
+  </div>
+  <div class="hud-tr">
+    <button id="pauseBtn" class="ibtn" aria-label="一時停止 (Esc)"><img src="assets/ui/pause.svg" alt=""></button>
+    <button id="muteBtn" class="ibtn" aria-label="音のオンオフ"><img id="muteIco" src="assets/ui/sound.svg" alt=""></button>
+  </div>
+
+  <div class="gauges" id="gauges">
+    <div class="g alt"><img src="assets/ui/altitude.svg" alt=""><b id="altNum">0</b><small id="altUnit">m</small></div>
+    <div class="g spd"><img src="assets/ui/speed.svg" alt=""><b id="spdNum">0</b><small id="spdUnit">km/h</small></div>
+    <div class="g ring"><img src="assets/ui/ring.svg" alt=""><b id="ringNum">0</b></div>
+    <div class="g beacon" id="beaconG" hidden><img src="assets/ui/planet.svg" alt=""><b id="beaconNum">0/5</b></div>
+  </div>
+
+  <div class="meter heat" id="heatM" hidden><span>HEAT</span><i><b id="heatFill"></b></i><em id="heatTxt">0%</em></div>
+  <div class="meter wall" id="wallM" hidden><img src="assets/ui/wallride.svg" alt=""><span>WALL RIDE</span><i><b id="wallFill"></b></i></div>
+  <div class="gravity" id="gravity" hidden><img src="assets/ui/gravity.svg" alt=""><b id="gravArrow">↑</b><span id="gravTxt">重力反転</span><em id="gravT">5.0</em></div>
+  <div class="ctag" id="ctag" hidden></div>
+
+  <div class="banner" id="banner" aria-live="polite"><small id="banCode"></small><b id="banName"></b><span id="banJp"></span><em id="banSub"></em></div>
+  <div class="toast" id="toast" aria-live="polite"><b id="toastBig"></b><small id="toastSmall"></small></div>
+  <div class="lights" id="lights" hidden><i></i><i></i><i></i><i class="go"></i></div>
+  <div class="popups" id="popups"></div>
+  <div class="subtitle" id="subtitle" aria-live="polite"><span id="subWho">ソラ</span><p id="subTxt"></p></div>
+  <div class="target" id="target" hidden><i></i><span id="targetD"></span></div>
+  <button class="skip" id="skipBtn" hidden>演出をスキップ ▸</button>
+  <div class="card hintcard" id="hintCard" hidden><p id="hintTxt"></p><div class="btns" id="hintBtns"></div></div>
+
+  <div class="cluster" id="cluster">
+    <div class="fuel" aria-label="燃料">
+      <svg viewBox="0 0 120 120"><circle class="trk" cx="60" cy="60" r="52" pathLength="100"/><circle class="val" id="fuelArc" cx="60" cy="60" r="52" pathLength="100"/></svg>
+      <div class="gv"><img src="assets/ui/thrust.svg" alt=""><b id="fuelPct">100</b><span>FUEL</span></div>
+    </div>
+    <div class="energy" aria-label="緊急エネルギー">
+      <i><b id="energyFill"></b></i><span><img src="assets/ui/energy.svg" alt="">ENERGY</span>
+    </div>
+  </div>
+</div>
+
+<!-- touch controls -->
+<div class="touch" id="touch" hidden>
+  <button class="tbtn steer left" id="leftBtn" aria-label="左"><img src="assets/ui/left.svg" alt=""></button>
+  <button class="tbtn steer right" id="rightBtn" aria-label="右"><img src="assets/ui/right.svg" alt=""></button>
+  <button class="tbtn eboost" id="eboostBtn" aria-label="緊急ブースト" disabled><img src="assets/ui/storm.svg" alt=""><small>BOOST</small></button>
+  <button class="tbtn thrust" id="thrustBtn" aria-label="推力（長押し）"><img src="assets/ui/thrust.svg" alt=""><span>推力</span><small>HOLD</small></button>
+</div>
+
+<!-- title -->
+<section class="screen" id="title" hidden>
+  <div class="card title-card">
+    <svg class="logo" viewBox="0 0 640 230" role="img" aria-label="THRUST ROADSTER TENMA EDITION">
+      <defs>
+        <linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6F8FF"/><stop offset=".55" stop-color="#bff4ff"/><stop offset="1" stop-color="#58E1F4"/></linearGradient>
+        <linearGradient id="lg2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFCB70"/><stop offset="1" stop-color="#FF6A62"/></linearGradient>
+        <filter id="gl" x="-20%" y="-40%" width="140%" height="180%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <g transform="translate(6,8) scale(.86)"><path d="M75 162 170 60l-22 75h72l-112 97 25-70Z" fill="#58E1F4" filter="url(#gl)"/><path d="M65 190h160" stroke="#FFCB70" stroke-width="6"/></g>
+      <text x="222" y="98" font-family="Orbitron,'Arial Black',sans-serif" font-weight="900" font-size="74" fill="url(#lg1)" letter-spacing="3" filter="url(#gl)">THRUST</text>
+      <text x="225" y="160" font-family="Orbitron,'Arial Black',sans-serif" font-weight="800" font-size="50" fill="none" stroke="#58E1F4" stroke-width="2" letter-spacing="7">ROADSTER</text>
+      <text x="228" y="202" font-family="Orbitron,sans-serif" font-size="22" font-weight="800" fill="url(#lg2)" letter-spacing="11">TENMA EDITION</text>
+    </svg>
+    <p class="lead">断崖から跳び、<b>道のない都市</b>を壁で駆け、<b>嵐</b>を突き抜けて<b>宇宙</b>へ。<br>そして、地球へ帰ってくる。<span class="nb">左右・推力・緊急ブースト、3つの操作で。</span></p>
+
+    <div class="chapters" id="chapters" aria-label="チャプター"></div>
+
+    <div class="btns main">
+      <button class="go" id="startBtn"><span>冒険をはじめる</span><img src="assets/ui/play.svg" alt=""></button>
+      <button class="go alt" id="taBtn" hidden><span>タイムアタック</span><img src="assets/ui/speed.svg" alt=""></button>
+    </div>
+    <div class="best" id="bestLine"></div>
+
+    <div class="row"><span class="lbl">むずかしさ</span>
+      <div class="seg" id="diffSeg">
+        <button data-v="easy" aria-pressed="false">かんたん</button><button data-v="normal" aria-pressed="true">ふつう</button><button data-v="hard" aria-pressed="false">むずかしい</button>
+      </div>
+    </div>
+    <div class="diffnote" id="diffNote"></div>
+    <div class="row"><span class="lbl">ボディカラー</span><div class="swatches" id="paintSeg"></div></div>
+    <div class="btns">
+      <button class="ghost" id="setBtnT"><img src="assets/ui/settings.svg" alt="">設定</button>
+      <button class="ghost" id="howBtn">遊び方</button>
+      <button class="ghost" id="recBtn">記録</button>
+    </div>
+    <p class="fine">オリジナル作品です。実在の自動車メーカー・車両・作品とは関係ありません。</p>
+  </div>
+</section>
+
+<!-- how to play -->
+<section class="screen" id="how" hidden>
+  <div class="card">
+    <h2>遊び方</h2>
+    <div class="howgrid">
+      <div class="hcol">
+        <h3>キーボード</h3>
+        <dl class="keys">
+          <dt><kbd>←</kbd><kbd>→</kbd> / <kbd>A</kbd><kbd>D</kbd></dt><dd>左右に操舵</dd>
+          <dt><kbd>Space</kbd> / <kbd>↑</kbd></dt><dd><b>推力</b>：押している間だけ上昇（燃料を使う）</dd>
+          <dt><kbd>Shift</kbd></dt><dd><b>緊急ブースト</b>：ENERGYが満タンの時だけ</dd>
+          <dt><kbd>Esc</kbd> / <kbd>P</kbd></dt><dd>ポーズ</dd>
+        </dl>
+      </div>
+      <div class="hcol">
+        <h3>スマホ</h3>
+        <div class="touchdiag">
+          <div class="td-l">左下の<br><b>◀ ▶</b><br>で操舵</div>
+          <div class="td-r">右下の<b>推力</b>を長押し<br>上の<b>BOOST</b>は<br>満タン時だけ光る</div>
+        </div>
+      </div>
+    </div>
+    <ul class="tips">
+      <li><b>燃料</b>は地面・発着パッド・燃料セル・気流の中で回復します。</li>
+      <li><b>壁面走行</b>（都市）：光るレーンの壁に横から寄せると、壁を走れます。離れるには反対へ操舵。</li>
+      <li><b>竜巻・上昇気流</b>：中に入ると一気に上昇。燃料も回復。</li>
+      <li><b>重力ゲート</b>（紫）：通ると一定時間、重力が上向きに。推力は「重力の反対」に効きます。</li>
+      <li><b>ニアミス</b>・連続リング・壁面走行で<b>ENERGY</b>がたまります。安全なオレンジの光球でもたまります。</li>
+      <li>危ない瞬間には<b>救済</b>（スロー＋自動回避）が発動します。回数は難易度で変わります。</li>
+      <li>着地は<b>垂直速度</b>と<b>機体の角度</b>で評価。着地の直前に推力でふわっと。</li>
+    </ul>
+    <div class="btns"><button class="go" id="howClose"><span>OK</span></button></div>
+  </div>
+</section>
+
+<!-- records -->
+<section class="screen" id="records" hidden>
+  <div class="card">
+    <h2>記録</h2>
+    <table class="rec" id="recTable"></table>
+    <ol class="rank" id="rankList"></ol>
+    <div class="btns">
+      <button class="go" id="recClose"><span>閉じる</span></button>
+      <button class="ghost danger" id="recReset">記録を消去</button>
+    </div>
+  </div>
+</section>
+
+<!-- settings -->
+<section class="screen" id="settings" hidden>
+  <div class="card">
+    <h2>設定</h2>
+    <div class="setgrid">
+      <label class="setting"><span>BGM</span><input id="musicOn" type="checkbox" checked><input id="musicVol" type="range" min="0" max="100" value="60" aria-label="BGM音量"></label>
+      <label class="setting"><span>効果音</span><input id="sfxOn" type="checkbox" checked><input id="sfxVol" type="range" min="0" max="100" value="80" aria-label="効果音音量"></label>
+      <label class="setting"><span>字幕</span><input type="checkbox" id="subChk" checked></label>
+      <label class="setting"><span>画面の揺れを抑える</span><input type="checkbox" id="motionChk"></label>
+      <label class="setting"><span>点滅・フラッシュを抑える</span><input type="checkbox" id="flashChk"></label>
+      <label class="setting"><span>救済のスロー演出</span><input type="checkbox" id="slowChk" checked></label>
+      <label class="setting"><span>演出を短くする</span><input type="checkbox" id="shortChk"></label>
+      <label class="setting"><span>振動</span><input type="checkbox" id="vibChk" checked></label>
+      <label class="setting"><span>着地ガイド</span><input type="checkbox" id="guideChk" checked></label>
+      <div class="setting"><span>操作アシスト</span>
+        <div class="seg small" id="assistSeg"><button data-v="0">標準</button><button data-v="1">強め</button><button data-v="2">最大</button></div>
+      </div>
+      <div class="setting"><span>画質</span>
+        <div class="seg small" id="qualSeg"><button data-v="auto">自動</button><button data-v="high">高</button><button data-v="mid">中</button><button data-v="low">低</button></div>
+      </div>
+    </div>
+    <div class="btns"><button class="go" id="setClose"><span>OK</span></button></div>
+  </div>
+</section>
+
+<!-- pause -->
+<section class="screen" id="pause" hidden>
+  <div class="card">
+    <h2>ひと息、つこう。</h2>
+    <p class="lead" id="pauseInfo"></p>
+    <div class="btns col">
+      <button class="go" id="resumeBtn"><span>つづける</span><img src="assets/ui/play.svg" alt=""></button>
+      <button class="ghost" id="cpBtn"><img src="assets/ui/checkpoint.svg" alt="">チェックポイントから</button>
+      <button class="ghost" id="restartBtn"><img src="assets/ui/replay.svg" alt="">この章をはじめから</button>
+      <button class="ghost" id="setBtnP"><img src="assets/ui/settings.svg" alt="">設定</button>
+      <button class="ghost" id="quitBtn"><img src="assets/ui/home.svg" alt="">タイトルへ</button>
+    </div>
+  </div>
+</section>
+
+<!-- result / game over -->
+<section class="screen" id="result" hidden>
+  <div class="card result-card">
+    <div class="res-head">
+      <div class="grade" id="grade">A</div>
+      <div><span class="eyebrow" id="resEyebrow">JOURNEY COMPLETE</span><h2 id="resTitle">結果</h2></div>
+    </div>
+    <p class="lead" id="debrief"></p>
+    <table class="rtable" id="resTable"></table>
+    <dl class="stats" id="resStats"></dl>
+    <div class="btns">
+      <button class="go" id="nextBtn"><span>もう一度</span><img src="assets/ui/replay.svg" alt=""></button>
+      <button class="go alt" id="retryBtn" hidden><span>この章に再挑戦</span></button>
+      <button class="ghost" id="homeBtn"><img src="assets/ui/home.svg" alt="">タイトルへ</button>
+    </div>
+  </div>
+</section>
+
+<noscript><div class="card" style="margin:40px auto">JavaScriptを有効にしてください。</div></noscript>
+
+<script src="js/vendor/three.min.js"></script>
+<script src="js/vendor/three-extras.js"></script>
+<script src="js/textures.js"></script>
+<script src="js/models.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/world.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
