@@ -1247,7 +1247,7 @@ function camFollow(dt){
   camera.up.set(0, 1, 0);
   camera.lookAt(camLook);
   camRoll = damp(camRoll, settings.motion ? 0 : (S.wall ? S.wall.side * .12 : S.vx * .008), 5, dt); camera.rotateZ(camRoll);
-  const fov = baseFov + clamp(S.speed - 24, 0, 34) * .38 + (S.eboostT > 0 ? 9 : 0) - S.nearZoom * 5 + (c && c.kind === 'cliff' ? 12 * Math.sin(clamp(c.t / c.dur, 0, 1) * Math.PI) : 0);
+  const fov = baseFov + clamp(S.speed - 24, 0, 34) * (ci >= 3 ? .15 : .38) + (S.eboostT > 0 ? 9 : 0) - S.nearZoom * 5 + (c && c.kind === 'cliff' ? 12 * Math.sin(clamp(c.t / c.dur, 0, 1) * Math.PI) : 0);
   camera.fov = damp(camera.fov, fov, 3, dt); camera.updateProjectionMatrix();
   const sd = W.env(S.mode === 'title' ? -1 : S.z, camera.position);
   const sun = W.sun; tmpV.copy(sd).normalize();

@@ -41,8 +41,8 @@ TR.World = (() => {
     K(3000,  { top: 0x1c2550, mid: 0x9a5a78, hor: 0xff8a5a, sunCol: 0xff8040, sunDir: [-.4, .03, 1], sunSize: 2.2, stars: .2, clouds: .6, fog: 0xa86a72, fogNear: 100, fogFar: 1200, hemiSky: 0xff9a80, hemiGround: 0x30203a, hemiI: .8, dirCol: 0xff9a60, dirI: 1.7, exposure: 1.0, env: 0 }),
     K(4100,  { top: 0x060a1e, mid: 0x152a4a, hor: 0x2a6a80, sunCol: 0x58e1f4, sunDir: [.5, .3, 1], sunSize: 0, stars: .6, clouds: .2, fog: 0x0d2235, fogNear: 60, fogFar: 900, hemiSky: 0x6ab8ff, hemiGround: 0x401830, hemiI: .7, dirCol: 0x9ad8ff, dirI: .9, exposure: 1.05, env: 1 }),
     K(7400,  { top: 0x0a0a24, mid: 0x2a1840, hor: 0x8a3a5a, sunCol: 0xff6a62, sunDir: [-.5, .2, 1], sunSize: 0, stars: .5, clouds: .3, fog: 0x2a1530, fogNear: 60, fogFar: 900, hemiSky: 0xff8a9a, hemiGround: 0x102030, hemiI: .7, dirCol: 0xffa0b0, dirI: .9, exposure: 1.05, env: 1 }),
-    K(8300,  { top: 0x120e30, mid: 0x2a2a58, hor: 0x54548a, sunCol: 0xc0b0ff, sunDir: [.3, .25, 1], sunSize: .6, stars: 0, clouds: .9, fog: 0x34345e, fogNear: 50, fogFar: 750, hemiSky: 0xa0a8e0, hemiGround: 0x2a2840, hemiI: .9, dirCol: 0xb0b0e0, dirI: 1.1, exposure: 1.05, env: 2 }),
-    K(11500, { top: 0x1c1440, mid: 0x3a3a70, hor: 0x7a70a8, sunCol: 0xffd090, sunDir: [.2, .2, 1], sunSize: 1, stars: 0, clouds: .9, fog: 0x484878, fogNear: 60, fogFar: 800, hemiSky: 0xb0b0e8, hemiGround: 0x303050, hemiI: .95, dirCol: 0xd0c0ff, dirI: 1.3, exposure: 1.05, env: 2 }),
+    K(8300,  { top: 0x120e30, mid: 0x2a2a58, hor: 0x54548a, sunCol: 0xc0b0ff, sunDir: [.3, .25, 1], sunSize: .6, stars: 0, clouds: .9, fog: 0x262646, fogNear: 50, fogFar: 750, hemiSky: 0xa0a8e0, hemiGround: 0x2a2840, hemiI: .9, dirCol: 0xb0b0e0, dirI: 1.1, exposure: 1.05, env: 2 }),
+    K(11500, { top: 0x1c1440, mid: 0x3a3a70, hor: 0x7a70a8, sunCol: 0xffd090, sunDir: [.2, .2, 1], sunSize: 1, stars: 0, clouds: .9, fog: 0x34345e, fogNear: 60, fogFar: 800, hemiSky: 0xb0b0e8, hemiGround: 0x303050, hemiI: .95, dirCol: 0xd0c0ff, dirI: 1.3, exposure: 1.05, env: 2 }),
     K(12250, { top: 0x2a5aa8, mid: 0x7aa8e0, hor: 0xffd890, sunCol: 0xffcb70, sunDir: [0, .25, 1], sunSize: 2.6, stars: 0, clouds: .5, fog: 0xd8c8b0, fogNear: 150, fogFar: 1600, hemiSky: 0xffe8c0, hemiGround: 0x5a6080, hemiI: 1.1, dirCol: 0xffe0a0, dirI: 2.6, exposure: 1.0, env: 2 }),
     K(12800, { top: 0x050a24, mid: 0x14285a, hor: 0x4a7ac0, sunCol: 0xfff0d8, sunDir: [.45, .15, 1], sunSize: 1.2, stars: .7, clouds: 0, fog: 0x0a1430, fogNear: 400, fogFar: 3000, hemiSky: 0x9ab8ff, hemiGround: 0x101830, hemiI: .6, dirCol: 0xfff4e0, dirI: 2.4, exposure: 1.0, env: 3 }),
     K(13300, { top: 0x000005, mid: 0x02040e, hor: 0x0a1430, sunCol: 0xfff6e8, sunDir: [.5, .18, 1], sunSize: .8, stars: 1, clouds: 0, fog: 0x02040c, fogNear: 600, fogFar: 4000, hemiSky: 0x5a6a90, hemiGround: 0x0a1020, hemiI: .45, dirCol: 0xffffff, dirI: 2.6, exposure: 1.05, env: 3 }),
@@ -499,8 +499,8 @@ TR.World = (() => {
   function updraftMesh(r, h, col){
     const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 32, 1, true).translate(0, h / 2, 0), new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
       uniforms: { time: Md.flameUniforms.time, col: { value: new THREE.Color(col) } },
-      vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }',
-      fragmentShader: 'uniform float time; uniform vec3 col; varying vec2 vUv; void main(){ float s = pow(.5+.5*sin(vUv.y*40. - time*9. + vUv.x*6.28*3.), 6.); float a = (.08 + s*.35) * smoothstep(0., .15, vUv.y) * smoothstep(1., .7, vUv.y); gl_FragColor = vec4(col*a*1.6, a); }' }));
+      vertexShader: 'varying vec2 vUv; varying float vD; void main(){ vUv = uv; vec4 mv = modelViewMatrix*vec4(position,1.); vD = -mv.z; gl_Position = projectionMatrix*mv; }',
+      fragmentShader: 'uniform float time; uniform vec3 col; varying vec2 vUv; varying float vD; void main(){ float s = pow(.5+.5*sin(vUv.y*40. - time*9. + vUv.x*6.28*3.), 6.); float a = (.08 + s*.35) * smoothstep(0., .15, vUv.y) * smoothstep(1., .7, vUv.y) * smoothstep(3., 20., vD); gl_FragColor = vec4(col*a*1.6, a); }' }));
     return m;
   }
 
@@ -706,6 +706,7 @@ TR.World = (() => {
     const dark = z > 3700 && z < 7900 ? 1 : (z > 8200 && z < 11900 ? .6 : 0);
     u.top.value.copy(skyMat.uniforms.hor.value).lerp(cB.setHex(0xffffff), .6 - dark * .5); if (dark) u.top.value.multiplyScalar(1 - dark * .45);
     u.bot.value.copy(skyMat.uniforms.mid.value).lerp(cB.setHex(0x9a96aa), .5);
+    if (z > 8200 && z < 11900){ const k = smooth(8200, 8600, z) * (1 - smooth(11500, 11900, z)); u.top.value.lerp(cB.setHex(0x30304e), k * .95); u.bot.value.lerp(cB.setHex(0x1e1e36), k); }
     if (cy !== null && cloud.visible){
       const inside = 1 - smooth(6, 40, Math.abs(cam.y - cy));
       if (inside > 0){ scene.fog.color.lerp(cB.setHex(0xe8e4ee), inside * .9); scene.fog.near = scene.fog.near * (1 - inside) + 2 * inside; scene.fog.far = scene.fog.far * (1 - inside) + 90 * inside; }

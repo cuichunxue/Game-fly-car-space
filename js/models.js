@@ -406,8 +406,8 @@ TR.Models = (() => {
     if (!swirlMat){
       const t = T.swirl();
       swirlMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide, uniforms: { map: { value: t }, time: flameUniforms.time, col: { value: new THREE.Color(0xc8ccf0) } },
-        vertexShader: 'uniform float time; varying vec2 vUv; varying float vF; void main(){ vUv = uv; vec3 p = position; float a = time*.8 + p.y*.04; p.x += sin(a)*p.y*.04; p.z += cos(a*1.3)*p.y*.03; vec4 mv = modelViewMatrix*vec4(p,1.); vec3 n = normalize(normalMatrix*normal); vF = abs(dot(n, normalize(-mv.xyz))); gl_Position = projectionMatrix*mv; }',
-        fragmentShader: 'uniform sampler2D map; uniform float time; uniform vec3 col; varying vec2 vUv; varying float vF; void main(){ vec4 t = texture2D(map, vec2(vUv.x*3. + time*.9 + vUv.y*1.5, vUv.y*2. - time*.3)); float edge = smoothstep(0., .12, vUv.y)*smoothstep(1., .8, vUv.y); float a = t.a*(.25 + (1.-vF)*.55)*edge; gl_FragColor = vec4(col*(.6+t.r*.6), a); }' });
+        vertexShader: 'uniform float time; varying vec2 vUv; varying float vF; varying float vD; void main(){ vUv = uv; vec3 p = position; float a = time*.8 + p.y*.04; p.x += sin(a)*p.y*.04; p.z += cos(a*1.3)*p.y*.03; vec4 mv = modelViewMatrix*vec4(p,1.); vD = -mv.z; vec3 n = normalize(normalMatrix*normal); vF = abs(dot(n, normalize(-mv.xyz))); gl_Position = projectionMatrix*mv; }',
+        fragmentShader: 'uniform sampler2D map; uniform float time; uniform vec3 col; varying vec2 vUv; varying float vF; varying float vD; void main(){ vec4 t = texture2D(map, vec2(vUv.x*3. + time*.9 + vUv.y*1.5, vUv.y*2. - time*.3)); float edge = smoothstep(0., .12, vUv.y)*smoothstep(1., .8, vUv.y); float a = t.a*(.25 + (1.-vF)*.55)*edge*smoothstep(4., 28., vD); gl_FragColor = vec4(col*(.6+t.r*.6), a); }' });
     }
     const g = new THREE.CylinderGeometry(r * 1.6, r * .45, h, 36, 12, true); g.translate(0, h / 2, 0);
     const m = new THREE.Mesh(g, swirlMat); m.renderOrder = 3;
