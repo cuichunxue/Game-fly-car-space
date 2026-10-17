@@ -84,7 +84,7 @@ img{pointer-events:none}
 .gravity span{font-weight:900;font-size:14px}.gravity em{font:800 18px var(--en);font-style:normal}
 .gravity.ending{border-color:var(--gold);animation:blink .5s steps(2) infinite}
 .ctag{position:absolute;left:50%;bottom:calc(196px + var(--sab));transform:translateX(-50%);background:var(--glass);border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-weight:900}
-.banner{position:absolute;left:0;right:0;top:24%;text-align:center;opacity:0;transform:translateY(10px);transition:opacity .6s,transform .6s}
+.banner{position:absolute;left:0;right:0;top:30%;text-align:center;opacity:0;transform:translateY(10px);transition:opacity .6s,transform .6s}
 .banner.on{opacity:1;transform:none}
 .banner small{display:block;font:800 14px var(--en);letter-spacing:6px;color:var(--gold)}
 .banner b{display:block;font:900 clamp(30px,6.4vw,64px)/1.1 var(--en);letter-spacing:4px;text-shadow:0 4px 30px rgba(0,0,0,.6),0 0 24px rgba(88,225,244,.35)}
@@ -95,7 +95,7 @@ img{pointer-events:none}
 .toast b{display:block;font:900 clamp(24px,5vw,42px)/1.1 var(--jp);text-shadow:0 3px 18px rgba(0,0,0,.7)}
 .toast small{display:block;font-weight:700;font-size:15px;opacity:.9;margin-top:4px}
 .toast.gold b{color:var(--gold)}.toast.cyan b{color:var(--cyan)}.toast.warn b{color:var(--coral)}.toast.violet b{color:var(--violet)}
-.lights{position:absolute;left:50%;top:30%;transform:translateX(-50%);display:flex;gap:14px;padding:12px 16px;background:var(--glass);border-radius:20px}
+.lights{position:absolute;left:50%;top:56%;transform:translateX(-50%);display:flex;gap:14px;padding:12px 16px;background:var(--glass);border-radius:20px}
 .lights i{width:34px;height:34px;border-radius:50%;background:#2a2030;border:2px solid #000}
 .lights i.on{background:var(--coral);box-shadow:0 0 18px var(--coral)}
 .lights i.go.on{background:#7cffc0;box-shadow:0 0 22px #7cffc0}
@@ -103,7 +103,7 @@ img{pointer-events:none}
 .pop{position:absolute;left:0;transform:translateX(-50%);font:900 18px var(--en);white-space:nowrap;animation:pop 1s ease-out forwards;text-shadow:0 2px 8px rgba(0,0,0,.8)}
 .pop.cyan{color:var(--cyan)}.pop.gold{color:var(--gold)}.pop.coral{color:var(--coral)}
 @keyframes pop{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-60px)}}
-.subtitle{position:absolute;left:50%;bottom:calc(168px + var(--sab));transform:translateX(-50%);max-width:min(720px,86vw);display:flex;gap:10px;align-items:flex-start;background:rgba(5,10,24,.72);border-left:3px solid var(--cyan);border-radius:10px;padding:8px 14px;opacity:0;transition:opacity .4s}
+.subtitle{position:absolute;left:50%;top:calc(84px + var(--sat));transform:translateX(-50%);max-width:min(720px,86vw);display:flex;gap:10px;align-items:flex-start;background:rgba(5,10,24,.72);border-left:3px solid var(--cyan);border-radius:10px;padding:8px 14px;opacity:0;transition:opacity .4s}
 .subtitle.on{opacity:1}
 .subtitle span{color:var(--cyan);font-weight:900;white-space:nowrap}
 .subtitle p{margin:0;font-weight:700;font-size:16px;line-height:1.5}
@@ -230,12 +230,31 @@ kbd{display:inline-block;min-width:22px;padding:1px 6px;border-radius:6px;backgr
   .gauges .g{min-width:96px;padding:3px 8px}
   .gauges .g b{font-size:15px}
   .howgrid{grid-template-columns:1fr}
-  .subtitle{bottom:calc(140px + var(--sab))}
+  .subtitle{top:calc(70px + var(--sat))}
   .chapters button span{display:none}
 }
 @media (max-height:500px){
-  .gauges{top:calc(92px + var(--sat));flex-direction:row;flex-wrap:wrap;max-width:46vw}
-  .subtitle{bottom:calc(110px + var(--sab))}
+  .screen#title{align-items:center}
+  .title-card{max-width:min(560px,70vw);padding:14px 18px}
+  .logo{max-height:96px;width:auto;margin:0 auto 2px}
+  .lead{font-size:13px;margin:2px 0 8px;line-height:1.5}
+  .chapters button{min-height:48px}
+  .row{margin:6px 0}
+  .banner{top:40%!important}
+  .banner b{font-size:28px}
+  .banner span{font-size:16px;margin-top:2px}
+  .banner em{display:none}
+  .banner small{font-size:12px;letter-spacing:4px}
+  .lights{top:58%;padding:8px 10px;gap:10px}
+  .lights i{width:24px;height:24px}
+  .score{font-size:20px}
+  .clock{font-size:13px}
+  .gauges .g{min-width:0;padding:2px 8px}
+  .gauges .g b{font-size:14px}
+  .gauges .g img{width:16px;height:16px}
+  .meter.heat{top:calc(64px + var(--sat))}
+  .gauges{top:calc(86px + var(--sat));gap:3px}
+  .subtitle{top:calc(64px + var(--sat));max-width:min(560px,60vw)}
   .banner{top:16%}
   .steer{width:72px;height:72px}.steer.right{left:calc(98px + var(--sal))}
   .thrust{width:100px;height:100px}

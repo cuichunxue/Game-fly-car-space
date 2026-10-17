@@ -337,6 +337,7 @@ function say(text, dur = 3.6, who = 'ソラ'){
 }
 function sayOnce(k, text, dur){ if (S.subsSaid[k]) return; S.subsSaid[k] = 1; say(text, dur); }
 function updateSubs(dt){
+  if (S.mode === 'countdown') return;
   if (subT > 0){ subT -= dt; if (subT <= 0) $('subtitle').classList.remove('on'); return; }
   const n = subQ.shift(); if (!n) return;
   if (!settings.subs){ subT = .01; return; }
@@ -615,10 +616,12 @@ function step(dt){
   /* forward speed */
   let target = W.speedAt(S.z) * (eb ? 1.45 : 1) * (S.wall ? 1.1 : 1);
   if (S.inStorm) target *= .8;
+  // caught by rising air: the vortex holds you so the ride lasts (environment as a resource)
+  if (S.volIn) target *= S.volIn.big ? .22 : S.volIn.kind === 'tornado' ? .28 : .5;
   if (ci === 4 && input.thrust && !S.grounded && S.z < 21300) target *= .82; // flare: thrust bleeds speed during reentry
   if (S.rollout){ target = 0; }
   if (S.grounded && ci === 0 && S.z < 60 && S.speed < 1 && !input.thrust && !input.steer) target = Math.max(target, 0);
-  const acc = S.rollout ? 2.2 : (S.speed < target ? (eb ? 3 : 1.1) : .9);
+  const acc = S.rollout ? 2.2 : S.volIn ? 4.5 : (S.speed < target ? (eb ? 3 : 1.1) : .9);
   S.speed = damp(S.speed, target, acc, dt);
 
   /* steering */
@@ -687,14 +690,15 @@ function step(dt){
       const k = 1 - (Math.hypot(S.x - vol.x, S.z - vol.z) / vol.r) * .45;
       ay += vol.lift * k + (S.vy < 0 ? -S.vy * 3 : 0);
       S.fuel = Math.min(100, S.fuel + 26 * dt);
-      if (vol.kind === 'tornado'){ S.vx += Math.sin(S.t * 7.3) * 26 * dt + (vol.x - S.x) * 1.2 * dt; S.stats.tornadoSec += dt; addEnergy(7 * dt); S.shake = Math.max(S.shake, settings.motion ? 0 : .25); }
+      if (vol.kind === 'tornado' || vol.big){ S.vx += (vol.kind === 'tornado' ? Math.sin(S.t * 7.3) * 22 * dt : 0) + (vol.x - S.x) * 2.2 * dt; }
+      if (vol.kind === 'tornado'){ S.stats.tornadoSec += dt; addEnergy(7 * dt); S.shake = Math.max(S.shake, settings.motion ? 0 : .25); }
       if (S.volIn !== vol){ S.volIn = vol; AU.sfx(vol.kind === 'tornado' ? 'tornado' : 'updraft'); toast(vol.kind === 'tornado' ? '竜巻で上昇!' : '上昇気流!', '燃料回復中', 1.1, 'cyan', 1); if (vol.big) sayOnce('big' + vol.z, vol.gold ? '雲が……割れる。光の柱だ！' : 'この気流に乗れば、街のてっぺんまで行ける！'); }
       S.ctag = vol.kind === 'tornado' ? '竜巻 — 上昇中' : '上昇気流';
     } else { S.volIn = null; S.ctag = ''; }
     // space soft bounds: drift back toward the path instead of getting lost
     if (B.soft){ if (S.y > B.ceil) ay -= (S.y - B.ceil) * 3; if (B.floor !== undefined && S.y < B.floor) ay += (B.floor - S.y) * 3; }
     S.vy += ay * dt;
-    const maxUp = vol ? 26 : (eb ? 18 : PH.VYMAX);
+    const maxUp = vol ? (vol.big ? 30 : 24) : (eb ? 18 : PH.VYMAX);
     const termK = ci === 4 && S.z < 21300 ? P.term : P.term;
     if (gDir < 0) S.vy = clamp(S.vy, -termK, maxUp); else S.vy = clamp(S.vy, -maxUp, termK);
     if (B.soft) S.vy *= Math.exp(-.4 * dt);

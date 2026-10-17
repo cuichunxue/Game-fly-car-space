@@ -512,11 +512,11 @@ TR.World = (() => {
     // tornadoes: lift + turbulence (warned ahead)
     const tz = [8600, 9150, 9800, 10400, 11100, 11700];
     tz.forEach((z, i) => {
-      const x = (i % 2 ? 1 : -1) * (6 + rnd() * 8), py = pathY(z), r = 9;
-      C.vols.push({ kind: 'tornado', x, z, r, y0: py - 50, y1: py + 55, lift: 36, swirl: 1 });
+      const x = (i % 2 ? 1 : -1) * (6 + rnd() * 8), py = pathY(z), r = 12;
+      C.vols.push({ kind: 'tornado', x, z, r, y0: py - 50, y1: py + 50, lift: 46, swirl: 1 });
       const m = Md.tornado(r, 140); add(C, m, x, py - 60, z);
       C.anim.push(dt => { m.rotation.y += .03; });
-      for (let k = 0; k < 4; k++) item(C, 'ring', x, py + 18 + k * 9, z + 6 + k * 4);
+      for (let k = 0; k < 4; k++) item(C, 'ring', x, py + 4 + k * 7, z + 4 + k * 5);
       C.signs.push({ z: z - 260, kind: 'tornado', x });
     });
     // thunderclouds: lightning columns with a readable warning
